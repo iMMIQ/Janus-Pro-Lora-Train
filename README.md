@@ -16,14 +16,6 @@ git clone https://github.com/deepseek-ai/Janus.git
 mv Janus/janus janus
 ```
 
-## Requirements
-
-Before running the scripts, ensure you have the required dependencies installed:
-
-```bash
-pip install torch transformers peft janus
-```
-
 ## Training: `train_janus_pro_lora.py`
 
 ### Description
