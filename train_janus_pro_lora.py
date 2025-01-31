@@ -169,7 +169,7 @@ def main():
             "encoder.mid.*.v",
             "decoder.mid.*.q",
             "decoder.mid.*.v",
-        ]
+        ],
         lora_dropout=0.1,
         bias="none",
         task_type=TaskType.CAUSAL_LM,
