@@ -33,7 +33,7 @@ def main():
         .to(device)
         .eval()
     )
-    
+
     if args.lora_path is not None:
         print(f"[INFO] Loading LoRA adapter from {args.lora_path}...")
         model = PeftModel.from_pretrained(base_model, args.lora_path)

@@ -21,8 +21,8 @@ def parse_args():
     parser.add_argument("--pretrained_model", type=str, default="Janus-Pro-1B")
     parser.add_argument("--output_dir", type=str, default="./janus_lora_output")
     parser.add_argument("--batch_size", type=int, default=2)
-    parser.add_argument("--max_epochs", type=int, default=15)
-    parser.add_argument("--lr", type=float, default=5e-5)
+    parser.add_argument("--max_epochs", type=int, default=10)
+    parser.add_argument("--lr", type=float, default=3e-4)
     parser.add_argument("--seed", type=int, default=42)
     return parser.parse_args()
 
@@ -74,7 +74,7 @@ class MultiModalTrainDataset(Dataset):
 def conversation_template(image_path, user_text="What is in the image?", assistant_text=""):
     return [
         {"role": "<|User|>", "content": f"<image_placeholder>\n{user_text}", "images": [image_path]},
-        {"role": "<|Assistant|>", "content": assistant_text},
+        {"role": "<|Assistant|>", "content": f"{assistant_text}"},
     ]
 
 
@@ -154,9 +154,23 @@ def main():
 
     lora_config = LoraConfig(
         r=8,
-        lora_alpha=32,
-        target_modules=["q_proj", "v_proj"],
-        lora_dropout=0.05,
+        lora_alpha=16,
+        target_modules=[
+            # Language model part
+            "q_proj",
+            "v_proj",
+            "gate_proj",
+            "up_proj",
+            "down_proj",
+            # Vision model part
+            "vision_tower.blocks.*.attn.qkv",
+            # Generation model part
+            "encoder.mid.*.q",
+            "encoder.mid.*.v",
+            "decoder.mid.*.q",
+            "decoder.mid.*.v",
+        ]
+        lora_dropout=0.1,
         bias="none",
         task_type=TaskType.CAUSAL_LM,
     )
@@ -168,6 +182,7 @@ def main():
         per_device_train_batch_size=args.batch_size,
         learning_rate=args.lr,
         fp16=True,
+        max_grad_norm=1.0,
         save_strategy="epoch",
         evaluation_strategy="no",
         logging_steps=50,
