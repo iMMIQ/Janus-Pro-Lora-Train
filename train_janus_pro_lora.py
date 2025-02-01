@@ -221,7 +221,9 @@ def main():
     lora_config = LoraConfig(
         r=8,
         lora_alpha=16,
-        target_modules=["q_proj", "v_proj", "gate_proj", "up_proj", "down_proj", "qkv", "proj", "fc1"],
+        target_modules=["q_proj", "v_proj", "gate_proj", "up_proj", "down_proj"
+                        # , "qkv", "proj", "fc1"
+                        ],
         lora_dropout=0.1,
         bias="none",
         task_type=TaskType.CAUSAL_LM,
